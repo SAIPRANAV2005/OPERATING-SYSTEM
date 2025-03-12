@@ -1,0 +1,96 @@
+
+#include <stdio.h>
+#define MAX 4
+
+void FCFS(int process[], int at[], int bt[], int n) {
+    int wt[MAX], tat[MAX], ct[MAX];
+    float total_wt = 0, total_tat = 0;
+
+
+    ct[0] = at[0] + bt[0];
+    wt[0] = 0; 
+
+    for (int i = 1; i < n; i++) {
+        ct[i] = ct[i-1] + bt[i];
+        wt[i] = ct[i] - at[i] - bt[i];
+        tat[i] = ct[i] - at[i];
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    printf("\nFCFS Scheduling\n");
+    printf("Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tCompletion Time\n");
+    for (int i = 0; i < n; i++) {
+        tat[i] = ct[i] - at[i];
+        printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n", process[i], at[i], bt[i], wt[i], tat[i], ct[i]);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", total_tat / n);
+}
+
+void SJF(int process[], int at[], int bt[], int n) {
+    int wt[MAX], tat[MAX], ct[MAX];
+    float total_wt = 0, total_tat = 0;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (at[i] > at[j]) {
+ 
+                int temp = at[i];
+                at[i] = at[j];
+                at[j] = temp;
+
+                temp = bt[i];
+                bt[i] = bt[j];
+                bt[j] = temp;
+
+                temp = process[i];
+                process[i] = process[j];
+                process[j] = temp;
+            } else if (at[i] == at[j] && bt[i] > bt[j]) {
+            
+                int temp = bt[i];
+                bt[i] = bt[j];
+                bt[j] = temp;
+
+                temp = process[i];
+                process[i] = process[j];
+                process[j] = temp;
+            }
+        }
+    }
+
+   
+    ct[0] = at[0] + bt[0];
+    wt[0] = 0; 
+    for (int i = 1; i < n; i++) {
+        ct[i] = ct[i-1] + bt[i];
+        wt[i] = ct[i] - at[i] - bt[i];
+        tat[i] = ct[i] - at[i];
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    printf("\nSJF Scheduling\n");
+    printf("Process\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tCompletion Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n", process[i], at[i], bt[i], wt[i], tat[i], ct[i]);
+    }
+    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", total_tat / n);
+}
+
+int main() {
+    int process[3] = {1, 2, 3};
+    int at[3] = {1,0,2}; 
+    int bt[3] = {3, 5, 8}; 
+
+    int n = 3; 
+
+ 
+    FCFS(process, at, bt, n);
+
+ 
+    SJF(process, at, bt,n);
+}
